@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text, ActivityIndicator, Image } from 'react-native';
+import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text, ActivityIndicator, Image, Alert } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { colors } from '../../styles/colors';
 import { typography } from '../../styles/typography';
 import Icon from '@expo/vector-icons/MaterialIcons';
-import { useRouter } from 'expo-router';
+import { useRouter, Link } from 'expo-router';
 import { ThemedView, ThemedText } from '../../components/Themed';
+
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ const LoginScreen = () => {
   const [role, setRole] = useState<'patient' | 'doctor'>('patient');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const { login, loginWithGoogle, loginWithFacebook } = useAuth();
+  const { login, loginWithFacebook } = useAuth();
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -51,7 +52,7 @@ const LoginScreen = () => {
   return (
     <ThemedView style={styles.container}>
       <Image
-        source={require('../assets/your_app_logo.png')}
+        source={require('../../assets/images/playstore.png')}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -110,10 +111,6 @@ const LoginScreen = () => {
       <View style={styles.socialLoginContainer}>
         <ThemedText style={styles.orText}>Or login with</ThemedText>
         <View style={styles.socialButtonsContainer}>
-          <TouchableOpacity style={styles.socialButton} onPress={loginWithGoogle}>
-            <Icon name="google" size={20} color={colors.text} style={styles.socialIcon} />
-            <ThemedText>Google</ThemedText>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.socialButton} onPress={loginWithFacebook}>
             <Icon name="facebook" size={20} color={colors.text} style={styles.socialIcon} />
             <ThemedText>Facebook</ThemedText>
@@ -121,11 +118,15 @@ const LoginScreen = () => {
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => router.push('/signup')}>
-        <ThemedText style={styles.signupLink}>Don't have an account? Sign up</ThemedText>
-      </TouchableOpacity>
+      <Link href="/auth/register" asChild>
+        <TouchableOpacity>
+          <ThemedText style={styles.signupLink}>Don't have an account? Sign up</ThemedText>
+        </TouchableOpacity>
+      </Link>
+      
+      {/* Temporarily disabled forgot password link */}
+      <TouchableOpacity onPress={() => Alert.alert('Coming Soon', 'Password reset feature is coming soon.')}>
 
-      <TouchableOpacity onPress={() => router.push('/forgot-password')}>
         <ThemedText style={styles.forgotPasswordLink}>Forgot Password?</ThemedText>
       </TouchableOpacity>
     </ThemedView>

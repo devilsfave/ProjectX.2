@@ -11,6 +11,8 @@ export const colors = {
     success: '#4CD964',
     backgroundDark: '#000000',
     textDark: '#FFFFFF',
-  
+    accent: '#yourAccentColor',
+    border: '#yourBorderColor',
+    lightBackground: '#yourLightBackgroundColor',
     textSecondary: '#666666'
   };
