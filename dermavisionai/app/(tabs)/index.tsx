@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, Href } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialIcons';
 import { ThemedView, ThemedText } from '../../components/Themed';
 import { colors } from '../../styles/colors';
@@ -55,15 +55,15 @@ const HomeScreen = () => {
             <ThemedText style={styles.optionText}>Profile</ThemedText>
           </TouchableOpacity>
         </Link>
-        <Link href="/doctor-list" asChild>
-          <TouchableOpacity
-            style={styles.optionButton}
-            accessibilityLabel="Find Dermatologist Button"
-          >
-            <Icon name="search" size={20} color="white" style={styles.buttonIcon} />
-            <ThemedText style={styles.optionText}>Find Dermatologist</ThemedText>
-          </TouchableOpacity>
-        </Link>
+        <Link href={'/doctor-list' as Href<string>} asChild>
+  <TouchableOpacity
+    style={styles.optionButton}
+    accessibilityLabel="Find Dermatologist Button"
+  >
+    <Icon name="search" size={20} color="white" style={styles.buttonIcon} />
+    <ThemedText style={styles.optionText}>Find Dermatologist</ThemedText>
+  </TouchableOpacity>
+</Link>
       </View>
     </ThemedView>
   );

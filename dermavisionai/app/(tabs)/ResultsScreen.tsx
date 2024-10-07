@@ -1,51 +1,52 @@
+import { saveAnalysisToFirestore } from '../../services/FirestoreService';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, Alert, TouchableOpacity, Linking } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { ProgressBar } from 'react-native-paper';
 import { colors } from '../../styles/colors';
-import { responsive } from '../../styles/responsive';
-import { saveAnalysisToFirestore } from '../../services/FirestoreService';
-
-type RootStackParamList = {
-  Results: { prediction: Prediction; imageUri: string };
-  Education: undefined;
-};
-
-type ResultsScreenRouteProp = RouteProp<RootStackParamList, 'Results'>;
-type ResultsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Results'>;
-
-type Props = {
-  route: ResultsScreenRouteProp;
-  navigation: ResultsScreenNavigationProp;
-};
-
-interface Prediction {
-  predictedClass: string;
-  probabilities: { [key: string]: number };
-}
-
+import { useAuth } from '../../hooks/ useAuth';
 interface ConditionInfo {
   explanation: string;
   link: string;
   recommendations: string[];
 }
 
+interface Props {
+  route: {
+    params: {
+      output: number[];
+      imageUri: string;
+    };
+  };
+  navigation: any;
+}
+
 const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { prediction, imageUri } = route.params;
+  const { output, imageUri } = route.params;
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [prediction, setPrediction] = useState<{ [key: string]: number } | null>(null);
 
   useEffect(() => {
+    processOutput(output);
+  }, [output]);
+
+  const processOutput = (outputData: number[]) => {
+    const classNames = ['Acne', 'Eczema', 'Melanoma', 'Psoriasis', 'Rosacea'];
+    const result = outputData.reduce((acc, prob, index) => {
+      acc[classNames[index]] = parseFloat((prob * 100).toFixed(2));
+      return acc;
+    }, {} as { [key: string]: number });
+
+    setPrediction(result);
     setIsLoading(false);
-  }, []);
+  };
 
   const getSeverityLevel = (className: string): string => {
     switch (className) {
       case 'Melanoma':
         return 'High';
-      case 'Blister':
       case 'Eczema':
+      case 'Psoriasis':
         return 'Medium';
       default:
         return 'Low';
@@ -63,36 +64,37 @@ const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
         'Consider consulting a dermatologist for personalized treatment options.',
       ],
     },
-    // ... (include other conditions as in your original code)
+    
   };
-
+  const  auth = useAuth();
   const saveToHistory = async () => {
     try {
-      await saveAnalysisToFirestore({ prediction, imageUri });
-      const saveToHistory = async () => {
-        try {
-          await saveAnalysisToFirestore(prediction, imageUri);
-          Alert.alert('Success', 'Analysis saved to history.');
-        } catch (err) {
-          console.error('Error saving analysis:', err);
-          Alert.alert('Error', 'Failed to save analysis.');
-        }
-      };
-      Alert.alert('Success', 'Analysis saved to history.');
+      const { user } = useAuth();
+      if (prediction) {
+        await saveAnalysisToFirestore(
+          prediction,
+          imageUri,
+          () => auth
+
+        );
+        Alert.alert('Success', 'Analysis saved to history.');
+      } else {
+        Alert.alert('Error', 'No prediction data available to save.');
+      }
     } catch (err) {
       console.error('Error saving analysis:', err);
       Alert.alert('Error', 'Failed to save analysis.');
-    }
+    } 
   };
 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.accent} />
-
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
+
 
   if (error) {
     return (
@@ -110,7 +112,7 @@ const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
     );
   }
 
-  const predictedClass = prediction.predictedClass;
+  const predictedClass = Object.entries(prediction).reduce((a, b) => a[1] > b[1] ? a : b)[0];
   const conditionInfo = conditionExplanations[predictedClass];
 
   return (
@@ -124,12 +126,12 @@ const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
             {predictedClass}
           </Text>
           <ProgressBar
-            progress={prediction.probabilities[predictedClass] / 100}
+            progress={prediction[predictedClass] / 100}
             color={colors.primary}
             style={styles.progressBar}
           />
           <Text style={styles.probabilityText}>
-            Confidence: {prediction.probabilities[predictedClass]}
+            Confidence: {prediction[predictedClass].toFixed(2)}%
           </Text>
           <Text style={styles.severityText}>
             Severity: {getSeverityLevel(predictedClass)}
@@ -154,12 +156,12 @@ const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
           )}
         </View>
         <Text style={styles.otherProbabilitiesLabel}>Other Possibilities:</Text>
-        {Object.entries(prediction.probabilities)
+        {Object.entries(prediction)
           .filter(([className]) => className !== predictedClass)
           .map(([className, probability]) => (
             <View key={className} style={styles.resultItem}>
               <Text style={styles.resultLabel}>{className}:</Text>
-              <Text style={styles.resultValue}>{probability}</Text>
+              <Text style={styles.resultValue}>{probability.toFixed(2)}%</Text>
               <ProgressBar
                 progress={probability / 100}
                 color={colors.secondary}
@@ -204,7 +206,7 @@ const styles = StyleSheet.create({
       marginBottom: 20,
     },
     topPredictionContainer: {
-      backgroundColor: colors.card,
+      backgroundColor: colors.lightGray,
       borderRadius: 10,
       padding: 15,
       marginBottom: 20,

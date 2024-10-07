@@ -11,4 +11,6 @@ export const colors = {
     success: '#4CD964',
     backgroundDark: '#000000',
     textDark: '#FFFFFF',
+  
+    textSecondary: '#666666'
   };
