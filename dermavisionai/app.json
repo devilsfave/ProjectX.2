@@ -4,30 +4,44 @@
     "slug": "dermavisionai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "icon": "./assets/Assets.xcassets/AppIcon.appiconset/1024.png",
+    "scheme": "dermavisionai",  
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/splash screen/splash_screen.gif",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1A0C27"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.devilsfave.dermavisionai"
+      "bundleIdentifier": "com.devilsfave.dermavisionai",
+      "icon": "./assets/Assets.xcassets/AppIcon.appiconset/1024.png",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to analyze skin conditions." 
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/mipmap-xxxhdpi/ic_launcher.png",
+        "backgroundColor": "#FFFFFF"
       },
-      "package": "com.devlin_39.dermavisionai"
+      "icon": "./assets/mipmap-xxxhdpi/ic_launcher.png",
+      "package": "com.devlin_39.dermavisionai",
+      "permissions": ["CAMERA"] 
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/Assets.xcassets/AppIcon.appiconset/196.png"
     },
+    "description": "DermaVisionAI helps you analyze skin conditions using AI.", 
+    "primaryColor": "#1A0C27", 
+    "updates": {
+      "fallbackToCacheTimeout": 0 
+    },
+    "assetBundlePatterns": [
+      "**/*" 
+    ],
     "plugins": [
       "expo-router",
       [
