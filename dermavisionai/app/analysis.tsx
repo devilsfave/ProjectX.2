@@ -8,7 +8,8 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { Camera, CameraType as CameraTypeValue, FlashMode as FlashModeValue } from 'expo-camera';
+import { Camera } from 'expo-camera'; // Import Camera correctly
+import { CameraType, FlashMode } from 'expo-camera/build/Camera.types'; // Corrected import for CameraType and FlashMode
 import * as ImageManipulator from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -18,11 +19,11 @@ import { responsive } from '../styles/responsive';
 
 const AnalysisScreen: React.FC = () => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [cameraType, setCameraType] = useState<CameraTypeValue>(CameraTypeValue.back);
-  const [flashMode, setFlashMode] = useState<FlashModeValue>(FlashModeValue.off);
+  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back); // Updated state declaration for CameraType
+  const [flashMode, setFlashMode] = useState<FlashMode>(FlashMode.off); // Updated state declaration for FlashMode
   const [image, setImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const cameraRef = useRef<Camera | null>(null);
+  const cameraRef = useRef<Camera | null>(null); // Updated camera ref type
   const router = useRouter();
   const { imageUri } = useLocalSearchParams<{ imageUri: string }>();
 
@@ -79,7 +80,7 @@ const AnalysisScreen: React.FC = () => {
       await AsyncStorage.removeItem('capturedImage');
       router.push({
         pathname: '../results/',
-        params: { prediction: JSON.stringify(results), imageUri: manipResult.uri }
+        params: { prediction: JSON.stringify(results), imageUri: manipResult.uri },
       });
     } catch (error) {
       console.error('Error analyzing picture:', error);
@@ -90,14 +91,14 @@ const AnalysisScreen: React.FC = () => {
   };
 
   const toggleCameraType = () => {
-    setCameraType(
-      cameraType === CameraTypeValue.back ? CameraTypeValue.front : CameraTypeValue.back
+    setCameraType(current =>
+      current === CameraType.back ? CameraType.front : CameraType.back
     );
   };
 
   const toggleFlashMode = () => {
-    setFlashMode(
-      flashMode === FlashModeValue.off ? FlashModeValue.on : FlashModeValue.off
+    setFlashMode(current =>
+      current === FlashMode.off ? FlashMode.on : FlashMode.off
     );
   };
 
@@ -118,20 +119,20 @@ const AnalysisScreen: React.FC = () => {
           flashMode={flashMode}
         >
           <View style={styles.controlsContainer}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.button}
               onPress={toggleCameraType}
               accessibilityLabel="Flip Camera Button"
             >
               <Text style={styles.buttonText}>Flip</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.button}
               onPress={toggleFlashMode}
               accessibilityLabel="Toggle Flash Button"
             >
               <Text style={styles.buttonText}>
-                {flashMode === FlashModeValue.off ? 'Flash On' : 'Flash Off'}
+                {flashMode === FlashMode.off ? 'Flash On' : 'Flash Off'}
               </Text>
             </TouchableOpacity>
           </View>

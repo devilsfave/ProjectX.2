@@ -7,7 +7,11 @@
       "@/*": ["./*"],
       "*": ["node_modules/*"],
       "hooks/*": ["hooks/*"]
-    }
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/expo-camera/build/Camera.types"
+    ]
   },
   "include": [
     "**/*.ts",
