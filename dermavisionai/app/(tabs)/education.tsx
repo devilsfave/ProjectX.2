@@ -16,10 +16,43 @@ type EducationItem = {
   link: string;
 };
 
+// Educational content for the diseases in HAM10000
 const educationContent: EducationItem[] = [
-  // ... (keep your existing educationContent array)
-  // Example:
-  // { title: "Skin Care Basics", content: "Learn about daily skin care routines...", link: "https://example.com/skin-care-basics" },
+  {
+    title: "Melanoma",
+    content: "Learn about melanoma, a serious form of skin cancer that develops from melanocytes.",
+    link: "https://www.cancer.org/cancer/melanoma-skin-cancer.html"
+  },
+  {
+    title: "Basal Cell Carcinoma",
+    content: "Basal cell carcinoma is the most common form of skin cancer, often appearing as a slightly transparent bump on the skin.",
+    link: "https://www.aad.org/public/diseases/skin-cancer/types/basal-cell-carcinoma"
+  },
+  {
+    title: "Squamous Cell Carcinoma",
+    content: "Squamous cell carcinoma is a common skin cancer that arises from the squamous cells in the outer layer of the skin.",
+    link: "https://www.cancer.org/cancer/squamous-cell-skin-cancer.html"
+  },
+  {
+    title: "Actinic Keratosis",
+    content: "Actinic keratosis is a pre-cancerous skin condition caused by sun exposure, appearing as rough, scaly patches.",
+    link: "https://www.aad.org/public/diseases/skin-cancer/types/actinic-keratosis"
+  },
+  {
+    title: "Atypical Melanocytic Nevi",
+    content: "Atypical nevi are moles that may have irregular features and can be a risk factor for melanoma.",
+    link: "https://www.mayoclinic.org/diseases-conditions/atypical-moles/symptoms-causes/syc-20377086"
+  },
+  {
+    title: "Vascular Lesions",
+    content: "Vascular lesions include a variety of skin conditions that involve blood vessels, such as hemangiomas and port-wine stains.",
+    link: "https://www.ncbi.nlm.nih.gov/books/NBK547990/"
+  },
+  {
+    title: "Dermatofibroma",
+    content: "Dermatofibroma is a benign skin growth that often appears as a small, firm bump on the skin.",
+    link: "https://www.aad.org/public/diseases/skin-conditions/dermatofibroma"
+  },
 ];
 
 const EducationScreen = () => {

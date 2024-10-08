@@ -1,9 +1,12 @@
 import { saveAnalysisToFirestore } from '../../services/FirestoreService';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, Alert, TouchableOpacity, Linking } from 'react-native';
+import {
+  View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, Alert, TouchableOpacity, Linking
+} from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { colors } from '../../styles/colors';
 import { useAuth } from '../../hooks/ useAuth';
+
 interface ConditionInfo {
   explanation: string;
   link: string;
@@ -31,7 +34,7 @@ const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
   }, [output]);
 
   const processOutput = (outputData: number[]) => {
-    const classNames = ['Acne', 'Eczema', 'Melanoma', 'Psoriasis', 'Rosacea'];
+    const classNames = ['nv', 'mel', 'bkl', 'bcc', 'akiec', 'vasc', 'df']; // Classes for HAM10000
     const result = outputData.reduce((acc, prob, index) => {
       acc[classNames[index]] = parseFloat((prob * 100).toFixed(2));
       return acc;
@@ -43,10 +46,10 @@ const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const getSeverityLevel = (className: string): string => {
     switch (className) {
-      case 'Melanoma':
+      case 'mel':
         return 'High';
-      case 'Eczema':
-      case 'Psoriasis':
+      case 'bcc':
+      case 'akiec':
         return 'Medium';
       default:
         return 'Low';
@@ -54,19 +57,66 @@ const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const conditionExplanations: { [key: string]: ConditionInfo } = {
-    'Acne': {
-      explanation: 'A common skin condition that causes pimples, blackheads, and whiteheads.',
-      link: 'https://www.aad.org/public/diseases/acne',
+    'nv': {
+      explanation: 'A common benign mole or nevus that usually requires no treatment.',
+      link: 'https://www.aad.org/public/diseases/skin-conditions/moles',
       recommendations: [
-        'Wash your face twice a day with a gentle cleanser.',
-        'Avoid touching or picking at your skin.',
-        'Use oil-free and non-comedogenic skincare products.',
-        'Consider consulting a dermatologist for personalized treatment options.',
+        'Monitor any changes in size, shape, or color.',
+        'Consult a dermatologist if changes occur.'
       ],
     },
-    
+    'mel': {
+      explanation: 'Melanoma is a serious form of skin cancer that develops from melanocytes.',
+      link: 'https://www.cancer.org/cancer/melanoma-skin-cancer.html',
+      recommendations: [
+        'Perform regular skin checks.',
+        'Wear sunscreen and protective clothing.',
+        'Consult a dermatologist regularly.'
+      ],
+    },
+    'bkl': {
+      explanation: 'Benign keratosis is a non-cancerous growth that can appear on the skin.',
+      link: 'https://www.aad.org/public/diseases/skin-conditions/benign-keratosis',
+      recommendations: [
+        'Keep the area clean and dry.',
+        'Consult a dermatologist if it becomes painful or changes.'
+      ],
+    },
+    'bcc': {
+      explanation: 'Basal cell carcinoma is the most common type of skin cancer.',
+      link: 'https://www.aad.org/public/diseases/skin-cancer/types/basal-cell-carcinoma',
+      recommendations: [
+        'Avoid sun exposure and use sunscreen.',
+        'See a dermatologist for any suspicious growths.'
+      ],
+    },
+    'akiec': {
+      explanation: 'Actinic keratosis is a pre-cancerous skin condition caused by sun exposure.',
+      link: 'https://www.aad.org/public/diseases/skin-cancer/types/actinic-keratosis',
+      recommendations: [
+        'Use sunscreen and protective clothing.',
+        'See a dermatologist for treatment options.'
+      ],
+    },
+    'vasc': {
+      explanation: 'Vascular lesions can appear in a variety of forms and are usually benign.',
+      link: 'https://www.ncbi.nlm.nih.gov/books/NBK547990/',
+      recommendations: [
+        'Monitor any changes in the lesions.',
+        'Consult a dermatologist if concerned.'
+      ],
+    },
+    'df': {
+      explanation: 'Dermatofibroma is a common benign skin growth that often appears on the legs.',
+      link: 'https://www.aad.org/public/diseases/skin-conditions/dermatofibroma',
+      recommendations: [
+        'Monitor for any changes.',
+        'Consult a dermatologist for removal options if desired.'
+      ],
+    },
   };
-  const  auth = useAuth();
+
+  const auth = useAuth();
   const saveToHistory = async () => {
     try {
       const { user } = useAuth();
@@ -75,7 +125,6 @@ const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
           prediction,
           imageUri,
           () => auth
-
         );
         Alert.alert('Success', 'Analysis saved to history.');
       } else {
@@ -84,7 +133,7 @@ const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
     } catch (err) {
       console.error('Error saving analysis:', err);
       Alert.alert('Error', 'Failed to save analysis.');
-    } 
+    }
   };
 
   if (isLoading) {
@@ -94,7 +143,6 @@ const ResultsScreen: React.FC<Props> = ({ route, navigation }) => {
       </View>
     );
   }
-
 
   if (error) {
     return (

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, FlatList, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { ThemedView, ThemedText } from '../../components/Themed';
 import { colors } from '../../styles/colors';
-import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
-import { db } from '../../services/firebaseConfig'; 
+import { fetchUnverifiedDoctors } from '../../services/FirestoreService'; // Make sure this path is correct
 import Icon from '@expo/vector-icons/MaterialIcons';
 
 interface Doctor {
@@ -26,13 +25,7 @@ export default function DoctorListScreen() {
 
   const fetchDoctors = async () => {
     try {
-      const doctorsRef = collection(db, 'doctors');
-      const q = query(doctorsRef, orderBy('rating', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const doctorList: Doctor[] = [];
-      querySnapshot.forEach((doc) => {
-        doctorList.push({ id: doc.id, ...doc.data() } as Doctor);
-      });
+      const doctorList = await fetchUnverifiedDoctors(); // Call your Firestore service function
       setDoctors(doctorList);
       setFilteredDoctors(doctorList);
     } catch (error) {

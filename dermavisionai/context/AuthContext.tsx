@@ -3,16 +3,19 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { Alert } from 'react-native';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+import * as Notifications from 'expo-notifications'; // Import Notifications
 
 export interface AuthContextType {
   user: any | null;
   loading: boolean;
   role: string | null;
+  expoPushToken: string | null; // Added expoPushToken
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string, role: string) => Promise<void>;
   logout: () => Promise<void>;
   loginWithFacebook: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  updateExpoPushToken: (token: string) => void; // Added function to update expoPushToken
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,8 +36,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string | null>(null);
+  const [expoPushToken, setExpoPushToken] = useState<string | null>(null); // State for expoPushToken
+
+  // Function to update expoPushToken
+  const updateExpoPushToken = (token: string) => {
+    setExpoPushToken(token);
+  };
 
   useEffect(() => {
+    // Fetch user and role from Firestore
     const unsubscribe = auth().onAuthStateChanged(async (user) => {
       if (user) {
         const userDoc = await firestore().collection('users').doc(user.uid).get();
@@ -43,7 +53,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(user);
       setLoading(false);
     });
+
     return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    // Get permission and Expo push token
+    const getToken = async () => {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status === 'granted') {
+        const tokenData = await Notifications.getExpoPushTokenAsync();
+        setExpoPushToken(tokenData.data); // Set expoPushToken when available
+      }
+    };
+
+    getToken();
   }, []);
 
   const getErrorMessage = (code: string): string => {
@@ -104,7 +128,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
-
       const userCredential = await auth().signInWithCredential(facebookCredential);
 
       if (userCredential.additionalUserInfo?.isNewUser) {
@@ -131,11 +154,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     loading,
     role,
+    expoPushToken, 
     login,
     signup,
     logout,
     loginWithFacebook,
     resetPassword,
+    updateExpoPushToken, 
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

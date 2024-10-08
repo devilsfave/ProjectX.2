@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import { AuthContextType } from '../context/AuthContext'; 
+import { AuthContextType } from '../context/AuthContext';
 
 const db = firestore();
 
@@ -122,7 +122,14 @@ export const fetchUnverifiedDoctors = async (filter: FilterOptions = {}) => {
 
     const snapshot = await query.get();
 
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Ensure to return the complete doctor object
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      name: doc.data().name,           // Make sure these fields exist in your Firestore
+      specialization: doc.data().specialization,
+      location: doc.data().location,
+      rating: doc.data().rating || 0,  // Default to 0 if rating does not exist
+    }));
   } catch (error) {
     console.error('Error fetching unverified doctors:', error);
     throw error;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Image } from 'react-native';
-import { Camera, CameraCapturedPicture } from 'expo-camera';
+import { Camera, CameraCapturedPicture, CameraType, FlashMode } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 import * as tf from '@tensorflow/tfjs';
@@ -10,10 +10,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ThemedView, ThemedText } from '@/components/Themed';
 import { colors } from '@/styles/colors';
 
-// Define the types for CameraType and FlashMode
-type CameraType = 'front' | 'back';
-type FlashMode = 'on' | 'off' | 'auto' | 'torch';
-
+// Define the types for navigation
 type RootStackParamList = {
   Results: { output: number[]; imageUri: string };
   Gallery: undefined;
@@ -23,8 +20,8 @@ type CameraScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 
 
 const CameraScreen: React.FC = () => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [cameraType, setCameraType] = useState<CameraType>('back');
-  const [flashMode, setFlashMode] = useState<FlashMode>('off');
+  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back); // Corrected the CameraType
+  const [flashMode, setFlashMode] = useState<FlashMode>(FlashMode.off); // Corrected the FlashMode
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const cameraRef = useRef<Camera | null>(null);
@@ -65,7 +62,7 @@ const CameraScreen: React.FC = () => {
       // Load and run the TensorFlow Lite model
       await tf.ready();
       const tfliteModel = await tflite.loadTFLiteModel(
-        'path/to/your/model.tflite'
+        '../../assets/ml/model_unquant.tflite'
       );
       const imageBuffer = await FileSystem.readAsStringAsync(resizedImage.uri, {
         encoding: FileSystem.EncodingType.Base64,
@@ -93,13 +90,13 @@ const CameraScreen: React.FC = () => {
 
   const toggleFlash = () => {
     setFlashMode((prevMode) =>
-      prevMode === 'off' ? 'on' : 'off'
+      prevMode === FlashMode.off ? FlashMode.on : FlashMode.off
     );
   };
 
   const switchCamera = () => {
     setCameraType((prevType) =>
-      prevType === 'back' ? 'front' : 'back'
+      prevType === CameraType.back ? CameraType.front : CameraType.back
     );
   };
 
@@ -129,8 +126,8 @@ const CameraScreen: React.FC = () => {
         <Camera
           style={styles.camera}
           ref={cameraRef}
-          type={cameraType}
-          flashMode={flashMode}
+          type={cameraType} 
+          flashMode={flashMode} 
         >
           {isLoading && (
             <View style={styles.loadingOverlay}>
@@ -152,7 +149,7 @@ const CameraScreen: React.FC = () => {
               accessibilityLabel="Toggle Flash Button"
             >
               <ThemedText style={styles.buttonText}>
-                {flashMode === 'off' ? 'Flash On' : 'Flash Off'}
+                {flashMode === FlashMode.off ? 'Flash On' : 'Flash Off'}
               </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity

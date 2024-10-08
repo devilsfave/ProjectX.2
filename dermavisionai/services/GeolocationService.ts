@@ -1,5 +1,6 @@
 import Geolocation from 'react-native-geolocation-service';
 import * as Location from 'expo-location';
+import axios from 'axios';
 
 // Function to get the user's current location
 export const getCurrentLocation = async () => {
@@ -18,11 +19,29 @@ export const getCurrentLocation = async () => {
 };
 
 // Function to find nearby health facilities (placeholder - you'll need to implement the actual logic)
-export const findNearbyFacilities = async (latitude, longitude) => {
-  
-  console.log('Finding nearby facilities for:', latitude, longitude);
-  return [
-    { name: 'Facility A', address: '123 Main St', distance: '1.2 km' },
-    { name: 'Facility B', address: '456 Elm St', distance: '2.5 km' },
-  ]; 
+const GOOGLE_MAPS_API_KEY = 'AIzaSyB8sjqse3KcHrYTf4huQb40QZ-E6lV29z0';
+
+interface Facility {
+  name: string;
+  address: string;
+  distance: string;
+}
+
+export const findNearbyFacilities = async (latitude: number, longitude: number): Promise<Facility[]> => {
+  try {
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=hospital&key=${GOOGLE_MAPS_API_KEY}`
+    );
+
+    const facilities: Facility[] = response.data.results.map((result: any) => ({
+      name: result.name,
+      address: result.vicinity,
+      distance: 'N/A', 
+    }));
+
+    return facilities.slice(0, 5); 
+  } catch (error) {
+    console.error('Error finding nearby facilities:', error);
+    throw error;
+  }
 };
