@@ -1,32 +1,25 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { View, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Image } from 'react-native';
-import { Camera, CameraCapturedPicture, CameraType, FlashMode } from 'expo-camera';
+import { Camera } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 import * as tf from '@tensorflow/tfjs';
 import * as tflite from '@tensorflow/tfjs-tflite';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ThemedView, ThemedText } from '@/components/Themed';
 import { colors } from '@/styles/colors';
-
-// Define the types for navigation
-type RootStackParamList = {
-  Results: { output: number[]; imageUri: string };
-  Gallery: undefined;
-};
-
-type CameraScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Results' | 'Gallery'>;
+import { useRouter } from 'expo-router';
 
 const CameraScreen: React.FC = () => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back); // Corrected the CameraType
-  const [flashMode, setFlashMode] = useState<FlashMode>(FlashMode.off); // Corrected the FlashMode
+  const [cameraType, setCameraType] = useState<any>('back');
+  const [flashMode, setFlashMode] = useState<any>('off');
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const cameraRef = useRef<Camera | null>(null);
+  const cameraRef = useRef<any>(null);
 
-  const navigation = useNavigation<CameraScreenNavigationProp>();
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -76,9 +69,9 @@ const CameraScreen: React.FC = () => {
 
       // Process the output and navigate to the results screen
       const outputData = await output.data();
-      navigation.navigate('Results', {
-        output: Array.from(outputData),
-        imageUri: capturedImage,
+      router.push({
+        pathname: "../results",
+        params: { output: JSON.stringify(Array.from(outputData)), imageUri: capturedImage }
       });
     } catch (error) {
       console.error('Error processing image:', error);
@@ -89,15 +82,11 @@ const CameraScreen: React.FC = () => {
   };
 
   const toggleFlash = () => {
-    setFlashMode((prevMode) =>
-      prevMode === FlashMode.off ? FlashMode.on : FlashMode.off
-    );
+    setFlashMode((prevMode: string) => (prevMode === 'off' ? 'on' : 'off'));
   };
 
   const switchCamera = () => {
-    setCameraType((prevType) =>
-      prevType === CameraType.back ? CameraType.front : CameraType.back
-    );
+    setCameraType((prevType: string) => (prevType === 'back' ? 'front' : 'back'));
   };
 
   if (hasPermission === null) {
@@ -115,59 +104,37 @@ const CameraScreen: React.FC = () => {
           <Image source={{ uri: capturedImage }} style={styles.previewImage} />
           <View style={styles.previewButtonContainer}>
             <TouchableOpacity style={styles.button} onPress={() => setCapturedImage(null)}>
-              <ThemedText style={styles.buttonText}>Retake</ThemedText>
+              <ThemedText>Retake</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={processImage}>
-              <ThemedText style={styles.buttonText}>Analyze</ThemedText>
+              <ThemedText>Process</ThemedText>
             </TouchableOpacity>
           </View>
         </View>
       ) : (
         <Camera
           style={styles.camera}
+          type={cameraType}
+          flashMode={flashMode}
           ref={cameraRef}
-          type={cameraType} 
-          flashMode={flashMode} 
         >
-          {isLoading && (
-            <View style={styles.loadingOverlay}>
-              <ActivityIndicator size="large" color={colors.primary} />
-            </View>
-          )}
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={captureImage}
-              disabled={isLoading}
-              accessibilityLabel="Capture Image Button"
-            >
-              <ThemedText style={styles.buttonText}>Capture</ThemedText>
+            <TouchableOpacity style={styles.button} onPress={switchCamera}>
+              <ThemedText>Flip</ThemedText>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={toggleFlash}
-              accessibilityLabel="Toggle Flash Button"
-            >
-              <ThemedText style={styles.buttonText}>
-                {flashMode === FlashMode.off ? 'Flash On' : 'Flash Off'}
-              </ThemedText>
+            <TouchableOpacity style={styles.button} onPress={toggleFlash}>
+              <ThemedText>{flashMode === 'off' ? 'Flash On' : 'Flash Off'}</ThemedText>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={switchCamera}
-              accessibilityLabel="Switch Camera Button"
-            >
-              <ThemedText style={styles.buttonText}>Switch Camera</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.navigate('Gallery')}
-              accessibilityLabel="Open Gallery Button"
-            >
-              <ThemedText style={styles.buttonText}>Gallery</ThemedText>
+            <TouchableOpacity style={styles.button} onPress={captureImage}>
+              <ThemedText>Capture</ThemedText>
             </TouchableOpacity>
           </View>
         </Camera>
+      )}
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
       )}
     </ThemedView>
   );

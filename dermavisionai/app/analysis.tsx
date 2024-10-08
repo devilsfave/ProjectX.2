@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import * as ImageManipulator from 'expo-image-manipulator';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loadModel, predictImage } from '../assets/ml/modelLoader';
 import {
   View,
   Text,
@@ -8,22 +12,17 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { Camera } from 'expo-camera'; // Import Camera correctly
-import { CameraType, FlashMode } from 'expo-camera/build/Camera.types'; // Corrected import for CameraType and FlashMode
-import * as ImageManipulator from 'expo-image-manipulator';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { loadModel, predictImage } from '../assets/ml/modelLoader';
+import { Camera, CameraType, FlashMode } from 'expo-camera';
 import { colors } from '../styles/colors';
 import { responsive } from '../styles/responsive';
 
 const AnalysisScreen: React.FC = () => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back); // Updated state declaration for CameraType
-  const [flashMode, setFlashMode] = useState<FlashMode>(FlashMode.off); // Updated state declaration for FlashMode
+  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
+  const [flashMode, setFlashMode] = useState<FlashMode>(FlashMode.off);
   const [image, setImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const cameraRef = useRef<Camera | null>(null); // Updated camera ref type
+  const cameraRef = useRef<any>(null);
   const router = useRouter();
   const { imageUri } = useLocalSearchParams<{ imageUri: string }>();
 
@@ -91,14 +90,18 @@ const AnalysisScreen: React.FC = () => {
   };
 
   const toggleCameraType = () => {
-    setCameraType(current =>
-      current === CameraType.back ? CameraType.front : CameraType.back
+    setCameraType(current => 
+      current === CameraType.back 
+        ? CameraType.front 
+        : CameraType.back
     );
   };
 
   const toggleFlashMode = () => {
-    setFlashMode(current =>
-      current === FlashMode.off ? FlashMode.on : FlashMode.off
+    setFlashMode(current => 
+      current === FlashMode.off 
+        ? FlashMode.on 
+        : FlashMode.off
     );
   };
 
@@ -111,87 +114,43 @@ const AnalysisScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {!image ? (
+      {image ? (
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: image }} style={styles.image} />
+          <TouchableOpacity style={styles.button} onPress={() => setImage(null)}>
+            <Text style={styles.buttonText}>Retake</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={analyzePicture}>
+            <Text style={styles.buttonText}>Analyze</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
         <Camera
           style={styles.camera}
-          ref={cameraRef}
           type={cameraType}
           flashMode={flashMode}
+          ref={cameraRef}
         >
-          <View style={styles.controlsContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={toggleCameraType}
-              accessibilityLabel="Flip Camera Button"
-            >
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
               <Text style={styles.buttonText}>Flip</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={toggleFlashMode}
-              accessibilityLabel="Toggle Flash Button"
-            >
+            <TouchableOpacity style={styles.button} onPress={toggleFlashMode}>
               <Text style={styles.buttonText}>
                 {flashMode === FlashMode.off ? 'Flash On' : 'Flash Off'}
               </Text>
             </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={takePicture}>
+              <Text style={styles.buttonText}>Capture</Text>
+            </TouchableOpacity>
           </View>
         </Camera>
-      ) : (
-        <View style={styles.imagePreviewContainer}>
-          <Image source={{ uri: image }} style={styles.imagePreview} />
-          <TouchableOpacity
-            style={styles.retakeButton}
-            onPress={() => setImage(null)}
-            accessibilityLabel="Retake Photo Button"
-          >
-            <Text style={styles.buttonText}>Retake</Text>
-          </TouchableOpacity>
-        </View>
       )}
       {isLoading && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="white" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       )}
-      <View style={styles.buttonContainer}>
-        {!image ? (
-          <TouchableOpacity
-            style={styles.captureButton}
-            onPress={takePicture}
-            accessibilityLabel="Capture Image Button"
-          >
-            <Text style={styles.buttonText}>Capture</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={styles.analyzeButton}
-            onPress={analyzePicture}
-            disabled={isLoading}
-            accessibilityLabel="Analyze Image Button"
-          >
-            {isLoading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text style={styles.buttonText}>Analyze</Text>
-            )}
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.back()} // Use router for going back
-          accessibilityLabel="Back Button"
-        >
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.push('/gallery')} // Use router for navigating to Gallery
-          accessibilityLabel="Open Gallery Button"
-        >
-          <Text style={styles.buttonText}>Gallery</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -199,65 +158,36 @@ const AnalysisScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   camera: {
     flex: 1,
   },
-  controlsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: responsive(20),
-  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'flex-end',
-    marginBottom: responsive(30),
+    margin: 20,
   },
   button: {
-    backgroundColor: colors.primary,
-    padding: responsive(10),
-    borderRadius: responsive(5),
-  },
-  captureButton: {
-    backgroundColor: colors.accent,
-    padding: responsive(20),
-    borderRadius: responsive(50),
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 10,
+    borderRadius: 5,
   },
   buttonText: {
-    fontSize: responsive(18),
-    color: colors.white,
-    fontWeight: 'bold',
+    color: 'white',
   },
-  imagePreviewContainer: {
+  imageContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  imagePreview: {
-    width: '100%',
+  image: {
+    width: '80%',
     height: '80%',
     resizeMode: 'contain',
   },
-  retakeButton: {
-    backgroundColor: colors.secondary,
-    padding: responsive(15),
-    borderRadius: responsive(5),
-    marginTop: responsive(20),
-  },
-  analyzeButton: {
-    backgroundColor: colors.accent,
-    padding: responsive(20),
-    borderRadius: responsive(50),
-  },
   loadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
