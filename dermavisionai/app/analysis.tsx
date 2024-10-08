@@ -11,19 +11,10 @@ import {
 import { Camera, CameraType as CameraTypeValue, FlashMode as FlashModeValue } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { loadModel, predictImage } from '../assets/ml/modelLoader';
 import { colors } from '../styles/colors';
 import { responsive } from '../styles/responsive';
-import firestore from '@react-native-firebase/firestore';
-
-type RootStackParamList = {
-  Results: { prediction: any; imageUri: string };
-  Gallery: undefined;
-};
-
-type AnalysisScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const AnalysisScreen: React.FC = () => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -32,13 +23,18 @@ const AnalysisScreen: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const cameraRef = useRef<Camera | null>(null);
-  const navigation = useNavigation<AnalysisScreenNavigationProp>();
+  const router = useRouter();
+  const { imageUri } = useLocalSearchParams<{ imageUri: string }>();
 
   useEffect(() => {
     const loadImage = async () => {
-      const savedImage = await AsyncStorage.getItem('capturedImage');
-      if (savedImage) {
-        setImage(savedImage);
+      if (imageUri) {
+        setImage(imageUri);
+      } else {
+        const savedImage = await AsyncStorage.getItem('capturedImage');
+        if (savedImage) {
+          setImage(savedImage);
+        }
       }
     };
 
@@ -48,7 +44,7 @@ const AnalysisScreen: React.FC = () => {
       await loadModel();
       loadImage();
     })();
-  }, []);
+  }, [imageUri]);
 
   const takePicture = async () => {
     if (cameraRef.current) {
@@ -77,11 +73,14 @@ const AnalysisScreen: React.FC = () => {
       const manipResult = await ImageManipulator.manipulateAsync(
         image,
         [{ resize: { width: 224, height: 224 } }],
-        { format: ImageManipulator.SaveFormat.PNG }  // Fixed SaveFormat error
+        { format: ImageManipulator.SaveFormat.PNG }
       );
       const results = await predictImage(manipResult.uri);
       await AsyncStorage.removeItem('capturedImage');
-      navigation.navigate('Results', { prediction: results, imageUri: manipResult.uri });
+      router.push({
+        pathname: '../results/',
+        params: { prediction: JSON.stringify(results), imageUri: manipResult.uri }
+      });
     } catch (error) {
       console.error('Error analyzing picture:', error);
       Alert.alert('Error', 'An error occurred during image analysis. Please try again.');
@@ -179,14 +178,14 @@ const AnalysisScreen: React.FC = () => {
         )}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.goBack()}
+          onPress={() => router.back()} // Use router for going back
           accessibilityLabel="Back Button"
         >
           <Text style={styles.buttonText}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Gallery')}
+          onPress={() => router.push('/gallery')} // Use router for navigating to Gallery
           accessibilityLabel="Open Gallery Button"
         >
           <Text style={styles.buttonText}>Gallery</Text>

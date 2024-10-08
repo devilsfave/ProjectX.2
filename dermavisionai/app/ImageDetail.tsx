@@ -1,30 +1,28 @@
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ThemedView, ThemedText } from '../components/Themed';
 import { colors } from '../styles/colors';
 import Icon from '@expo/vector-icons/MaterialIcons';
 
-type RouteParams = {
-  uri: string;
-};
-
 const ImageDetailScreen: React.FC = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { uri } = route.params as RouteParams;
+  const router = useRouter();
+  const { uri } = useLocalSearchParams<{ uri: string }>();
+
+  if (!uri) {
+    return <ThemedText>No image URI provided</ThemedText>;
+  }
 
   return (
     <ThemedView style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Icon name="arrow-back" size={24} color={colors.text} />
       </TouchableOpacity>
       <Image source={{ uri }} style={styles.image} resizeMode="contain" />
-      <TouchableOpacity style={styles.analyzeButton} onPress={() => {
-        // Navigate to analysis screen or start analysis process
-        // For now, we'll just show an alert
-        alert('Analysis feature coming soon!');
-      }}>
+      <TouchableOpacity 
+        style={styles.analyzeButton} 
+        onPress={() => router.push({ pathname: '/analysis', params: { imageUri: uri } })}
+      >
         <ThemedText style={styles.analyzeButtonText}>Analyze Image</ThemedText>
       </TouchableOpacity>
     </ThemedView>
