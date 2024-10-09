@@ -1,8 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import * as ImageManipulator from 'expo-image-manipulator';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { loadModel, predictImage } from '../assets/ml/modelLoader';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'expo-router';
 import {
   View,
   Text,
@@ -12,54 +9,39 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { Camera, CameraType, FlashMode } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { colors } from '../styles/colors';
-import { responsive } from '../styles/responsive';
+import { loadModel, predictImage } from '../assets/ml/modelLoader';
 
 const AnalysisScreen: React.FC = () => {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
-  const [flashMode, setFlashMode] = useState<FlashMode>(FlashMode.off);
   const [image, setImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const cameraRef = useRef<any>(null);
   const router = useRouter();
-  const { imageUri } = useLocalSearchParams<{ imageUri: string }>();
 
   useEffect(() => {
-    const loadImage = async () => {
-      if (imageUri) {
-        setImage(imageUri);
-      } else {
-        const savedImage = await AsyncStorage.getItem('capturedImage');
-        if (savedImage) {
-          setImage(savedImage);
-        }
-      }
-    };
-
     (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-      await loadModel();
-      loadImage();
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Camera permission is required to use this feature.');
+      }
     })();
-  }, [imageUri]);
+  }, []);
 
   const takePicture = async () => {
-    if (cameraRef.current) {
-      try {
-        const photo = await cameraRef.current.takePictureAsync({
-          quality: 0.8,
-          base64: true,
-          exif: true,
-        });
-        await AsyncStorage.setItem('capturedImage', photo.uri);
-        setImage(photo.uri);
-      } catch (error) {
-        console.error('Error taking picture:', error);
-        Alert.alert('Camera Error', 'An error occurred while taking the picture. Please try again.');
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setImage(result.assets[0].uri);
       }
+    } catch (error) {
+      console.error('Error taking picture:', error);
+      Alert.alert('Camera Error', 'An error occurred while taking the picture. Please try again.');
     }
   };
 
@@ -75,11 +57,17 @@ const AnalysisScreen: React.FC = () => {
         [{ resize: { width: 224, height: 224 } }],
         { format: ImageManipulator.SaveFormat.PNG }
       );
-      const results = await predictImage(manipResult.uri);
-      await AsyncStorage.removeItem('capturedImage');
+
+      await loadModel();
+      const prediction = await predictImage(manipResult.uri);
+
       router.push({
         pathname: '../results/',
-        params: { prediction: JSON.stringify(results), imageUri: manipResult.uri },
+        params: { 
+          imageUri: manipResult.uri,
+          predictedClass: prediction.predictedClass,
+          probabilities: JSON.stringify(prediction.probabilities)
+        },
       });
     } catch (error) {
       console.error('Error analyzing picture:', error);
@@ -88,29 +76,6 @@ const AnalysisScreen: React.FC = () => {
       setIsLoading(false);
     }
   };
-
-  const toggleCameraType = () => {
-    setCameraType(current => 
-      current === CameraType.back 
-        ? CameraType.front 
-        : CameraType.back
-    );
-  };
-
-  const toggleFlashMode = () => {
-    setFlashMode(current => 
-      current === FlashMode.off 
-        ? FlashMode.on 
-        : FlashMode.off
-    );
-  };
-
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
 
   return (
     <View style={styles.container}>
@@ -125,26 +90,11 @@ const AnalysisScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       ) : (
-        <Camera
-          style={styles.camera}
-          type={cameraType}
-          flashMode={flashMode}
-          ref={cameraRef}
-        >
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-              <Text style={styles.buttonText}>Flip</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={toggleFlashMode}>
-              <Text style={styles.buttonText}>
-                {flashMode === FlashMode.off ? 'Flash On' : 'Flash Off'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={takePicture}>
-              <Text style={styles.buttonText}>Capture</Text>
-            </TouchableOpacity>
-          </View>
-        </Camera>
+        <View style={styles.cameraPlaceholder}>
+          <TouchableOpacity style={styles.button} onPress={takePicture}>
+            <Text style={styles.buttonText}>Take Picture</Text>
+          </TouchableOpacity>
+        </View>
       )}
       {isLoading && (
         <View style={styles.loadingOverlay}>
@@ -159,20 +109,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  camera: {
+  cameraPlaceholder: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     margin: 20,
   },
   button: {
     backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 10,
+    padding: 15,
     borderRadius: 5,
+    alignSelf: 'center',
+    alignItems: 'center',
+    margin: 20,
   },
   buttonText: {
+    fontSize: 18,
     color: 'white',
   },
   imageContainer: {

@@ -1,32 +1,38 @@
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Image } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 import * as tf from '@tensorflow/tfjs';
 import * as tflite from '@tensorflow/tfjs-tflite';
-import { useNavigation } from '@react-navigation/native';
 import { ThemedView, ThemedText } from '@/components/Themed';
 import { colors } from '@/styles/colors';
 import { useRouter } from 'expo-router';
 
-const CameraScreen: React.FC = () => {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [cameraType, setCameraType] = useState<any>('back');
-  const [flashMode, setFlashMode] = useState<any>('off');
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+const CameraScreen = () => {
+  const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
+  const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off);
+  const [capturedImage, setCapturedImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const cameraRef = useRef<any>(null);
+  const cameraRef = useRef(null);
 
+  const [permission, requestPermission] = Camera.useCameraPermissions();
   const router = useRouter();
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
+  if (!permission) {
+    return <ActivityIndicator size="large" color={colors.primary} />;
+  }
+
+  if (!permission.granted) {
+    return (
+      <ThemedView style={styles.container}>
+        <ThemedText style={styles.message}>We need your permission to show the camera</ThemedText>
+        <TouchableOpacity style={styles.button} onPress={requestPermission}>
+          <ThemedText>Grant Permission</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
+    );
+  }
 
   const captureImage = async () => {
     if (cameraRef.current) {
@@ -45,14 +51,12 @@ const CameraScreen: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // Image preprocessing
       const resizedImage = await ImageManipulator.manipulateAsync(
         capturedImage,
         [{ resize: { width: 224, height: 224 } }],
         { format: ImageManipulator.SaveFormat.JPEG }
       );
 
-      // Load and run the TensorFlow Lite model
       await tf.ready();
       const tfliteModel = await tflite.loadTFLiteModel(
         '../../assets/ml/model_unquant.tflite'
@@ -60,14 +64,9 @@ const CameraScreen: React.FC = () => {
       const imageBuffer = await FileSystem.readAsStringAsync(resizedImage.uri, {
         encoding: FileSystem.EncodingType.Base64,
       });
-      const imageData = tf.tensor3d(Buffer.from(imageBuffer, 'base64'), [
-        224,
-        224,
-        3,
-      ]);
-      const output = tfliteModel.predict(imageData) as tf.Tensor;
+      const imageData = tf.tensor3d(Buffer.from(imageBuffer, 'base64'), [224, 224, 3]);
+      const output = tfliteModel.predict(imageData);
 
-      // Process the output and navigate to the results screen
       const outputData = await output.data();
       router.push({
         pathname: "../results",
@@ -82,20 +81,20 @@ const CameraScreen: React.FC = () => {
   };
 
   const toggleFlash = () => {
-    setFlashMode((prevMode: string) => (prevMode === 'off' ? 'on' : 'off'));
+    setFlashMode(prevMode => 
+      prevMode === Camera.Constants.FlashMode.off 
+        ? Camera.Constants.FlashMode.on 
+        : Camera.Constants.FlashMode.off
+    );
   };
 
   const switchCamera = () => {
-    setCameraType((prevType: string) => (prevType === 'back' ? 'front' : 'back'));
+    setCameraType(prevType => 
+      prevType === Camera.Constants.Type.back 
+        ? Camera.Constants.Type.front 
+        : Camera.Constants.Type.back
+    );
   };
-
-  if (hasPermission === null) {
-    return <ActivityIndicator size="large" color={colors.primary} />;
-  }
-
-  if (hasPermission === false) {
-    return <ThemedText>No access to camera</ThemedText>;
-  }
 
   return (
     <ThemedView style={styles.container}>
@@ -123,7 +122,9 @@ const CameraScreen: React.FC = () => {
               <ThemedText>Flip</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={toggleFlash}>
-              <ThemedText>{flashMode === 'off' ? 'Flash On' : 'Flash Off'}</ThemedText>
+              <ThemedText>
+                {flashMode === Camera.Constants.FlashMode.off ? 'Flash On' : 'Flash Off'}
+              </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={captureImage}>
               <ThemedText>Capture</ThemedText>
@@ -167,9 +168,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  buttonText: {
-    color: colors.white,
-    fontWeight: 'bold',
+  message: {
+    textAlign: 'center',
+    marginBottom: 20,
   },
   previewContainer: {
     flex: 1,

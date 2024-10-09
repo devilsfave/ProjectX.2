@@ -1,0 +1,8 @@
+tasks:
+  - init: |
+      sudo apt-get update
+      sudo apt-get install -y android-sdk
+      echo "export ANDROID_HOME=/usr/lib/android-sdk" >> ~/.bashrc
+      echo "export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools" >> ~/.bashrc
+      source ~/.bashrc
+      - command: yes | sdkmanager --licenses
