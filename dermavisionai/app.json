@@ -4,7 +4,7 @@
     "slug": "dermavisionai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/android/play_store_512.png",
     "scheme": "dermavisionai",  
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -15,24 +15,25 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.devilsfave.dermavisionai",
-      "icon": "./assets/images/icon.png",
+      "icon": "./assets/ios/AppIcon@3x.png",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to analyze skin conditions." 
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/appstore.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/android/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+        "backgroundImage": "./assets/android/res/mipmap-xxxhdpi/ic_launcher_background.png",
+        "monochromeImage": "./assets/android/res/mipmap-xxxhdpi/ic_launcher_monochrome.png"
       },
-      "icon": "./assets/images/icon.png",
+      "icon": "./assets/android/play_store_512.png",
       "package": "com.devlin_39.dermavisionai",
       "permissions": ["CAMERA"] 
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": ".images/favicon.png"
+      "favicon": "./assets/images/favicon.png"
     },
     "description": "DermaVisionAI helps you analyze skin conditions using AI.", 
     "primaryColor": "#1A0C27", 
@@ -55,7 +56,8 @@
         "expo-font",
         {
           "fonts": [
-            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf"
+            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf",
+            "./assets/fonts/SpaceMono-Regular.ttf"
           ]
         }
       ]
