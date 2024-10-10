@@ -4,18 +4,18 @@
     "slug": "dermavisionai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/Assets.xcassets/AppIcon.appiconset/1024.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "dermavisionai",  
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash screen/splash_screen.gif",
+      "image": "./assets/splash screen/splash_screen.png",
       "resizeMode": "contain",
       "backgroundColor": "#1A0C27"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.devilsfave.dermavisionai",
-      "icon": "./assets/Assets.xcassets/AppIcon.appiconset/1024.png",
+      "icon": "./assets/images/icon.png",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to analyze skin conditions." 
       }
@@ -25,14 +25,14 @@
         "foregroundImage": "./assets/appstore.png",
         "backgroundColor": "#FFFFFF"
       },
-      "icon": "./assets/appstore.png",
+      "icon": "./assets/images/icon.png",
       "package": "com.devlin_39.dermavisionai",
       "permissions": ["CAMERA"] 
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/Assets.xcassets/AppIcon.appiconset/196.png"
+      "favicon": ".images/favicon.png"
     },
     "description": "DermaVisionAI helps you analyze skin conditions using AI.", 
     "primaryColor": "#1A0C27", 
@@ -44,12 +44,13 @@
     ],
     "plugins": [
       "expo-router",
-      "expo-camera",
-      {
-        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-        "recordAudioAndroid": true
-      },
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
+        }
+      ],
       [
         "expo-font",
         {
