@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "537710907865",
+    "project_id": "dermaviosion-ai",
+    "storage_bucket": "dermaviosion-ai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537710907865:android:a3fb336ef1826ecdd789c8",
+        "android_client_info": {
+          "package_name": "com.devilsfave.dermavisionai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "537710907865-hssjnrkn76ba941s51tonl0h8tslrmvp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devilsfave.dermavisionai",
+            "certificate_hash": "828ab24a87e584e0ad10b161a06423804cab876c"
+          }
+        },
+        {
+          "client_id": "537710907865-q2dv2qkht3t04jmlcdla03oupfu1crdr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA31h_KyFq8MbwzJt5NKZWZMTkFcqrI6nQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "537710907865-q2dv2qkht3t04jmlcdla03oupfu1crdr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

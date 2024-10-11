@@ -3,64 +3,8 @@
     "name": "dermavisionai",
     "slug": "dermavisionai",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/android/play_store_512.png",
-    "scheme": "dermavisionai",  
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/splash screen/splash_screen.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#1A0C27"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.devilsfave.dermavisionai",
-      "icon": "./assets/ios/AppIcon@3x.png",
-      "infoPlist": {
-        "NSCameraUsageDescription": "This app uses the camera to analyze skin conditions." 
-      }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/android/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
-        "backgroundImage": "./assets/android/res/mipmap-xxxhdpi/ic_launcher_background.png",
-        "monochromeImage": "./assets/android/res/mipmap-xxxhdpi/ic_launcher_monochrome.png"
-      },
-      "icon": "./assets/android/play_store_512.png",
-      "package": "com.devlin_39.dermavisionai",
-      "permissions": ["CAMERA"] 
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "description": "DermaVisionAI helps you analyze skin conditions using AI.", 
-    "primaryColor": "#1A0C27", 
-    "updates": {
-      "fallbackToCacheTimeout": 0 
-    },
     "assetBundlePatterns": [
-      "**/*" 
-    ],
-    "plugins": [
-      "expo-router",
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
-        }
-      ],
-      [
-        "expo-font",
-        {
-          "fonts": [
-            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf",
-            "./assets/fonts/SpaceMono-Regular.ttf"
-          ]
-        }
-      ]
+      "**/*"
     ],
     "experiments": {
       "typedRoutes": true
@@ -68,7 +12,8 @@
     "extra": {
       "eas": {
         "projectId": "238e5f85-22af-486d-8c6a-7885ef3ddde1"
-      }
+      },
+      "NODE_ENV": "development"
     },
     "owner": "devlin_39"
   }
