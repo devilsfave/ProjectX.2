@@ -16,7 +16,7 @@ buildscript {
     }
     dependencies {
         // Updated to the latest Gradle plugin version recommended in the instructions
-        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath('com.android.tools.build:gradle:8.0.0') 
         // Ensure you are using the latest react-native-gradle-plugin
         classpath('com.facebook.react:react-native-gradle-plugin') 
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
