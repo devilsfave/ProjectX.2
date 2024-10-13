@@ -52,7 +52,7 @@ const LoginScreen = () => {
   return (
     <ThemedView style={styles.container}>
       <Image
-        source={require('../../assets/images/playstore.png')}
+        source={require('../../android/app/src/main/res/mipmap-mdpi/ic_launcher.png')}
         style={styles.logo}
         resizeMode="contain"
       />

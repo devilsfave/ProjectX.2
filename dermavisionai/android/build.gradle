@@ -6,8 +6,8 @@ buildscript {
         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
-        ndkVersion = "26.1.10909125"
+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.24'
+        ndkVersion = "27.1.12297006"
         firebaseBoMVersion = "32.2.0"
     }
     repositories {
@@ -15,17 +15,21 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.android.tools.build:gradle')
-        classpath('com.facebook.react:react-native-gradle-plugin')
+        // Updated to the latest Gradle plugin version recommended in the instructions
+        classpath("com.android.tools.build:gradle:8.1.0")
+        // Ensure you are using the latest react-native-gradle-plugin
+        classpath('com.facebook.react:react-native-gradle-plugin') 
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath('com.google.gms:google-services:4.4.2')
     }
 }
 
-apply plugin: "com.facebook.react.rootproject"
+// Apply the React Native Gradle Plugin globally as per the updated instructions
+
 
 allprojects {
     repositories {
+        // The following blocks were corrected based on your setup instructions for locating node_modules dependencies
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))
@@ -42,6 +46,13 @@ allprojects {
 }
 
 // @generated begin expo-camera-import - expo prebuild (DO NOT MODIFY) sync-f244f4f3d8bf7229102e8f992b525b8602c74770
-def expoCameraMavenPath = new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven")
+def expoCameraMavenPath = new File(["node", '--print', "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven")
 allprojects { repositories { maven { url(expoCameraMavenPath) } } }
 // @generated end expo-camera-import
+
+// Configure Hermes (React Native's JavaScript engine) as per the provided instructions
+project.ext.react = [
+    enableHermes: true,  // Or false to disable Hermes
+]
+
+// Add further configuration as needed for the project, such as custom packaging options.

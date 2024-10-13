@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import { fetchUnverifiedDoctors, verifyDoctorInFirestore, rejectDoctorInFirestore } from '../../services/FirestoreService';
-import { useAuth } from '../context/AuthContext';
-import { colors } from '../styles/colors';
-import { responsive } from '../styles/responsive'; 
+import { useAuth } from '../../context/AuthContext';
+import { colors } from '../../styles/colors';
+import { responsive } from '../../styles/responsive'; 
 
 const AdminPanelScreen = () => {
   const { user, role } = useAuth();

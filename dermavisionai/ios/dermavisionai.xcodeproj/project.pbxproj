@@ -14,9 +14,7 @@
 		96905EF65AED1B983A6B3ABC /* libPods-dermavisionai.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-dermavisionai.a */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		141E65C21045467E9D17C87D /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8642B4D298E84C59BCDA4155 /* noop-file.swift */; };
-		53BD82D0BE8442D9B3FF0AA1 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28D893664BFE493199B0F0D7 /* MaterialIcons.ttf */; };
-		5FD0D66B9531473DA8E14AED /* SpaceMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9B96BE5E878B4D5AB3E0FE4D /* SpaceMono-Regular.ttf */; };
+		0155FBB3CDFA4878A8FCC62E /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3B6CF243F14226874B262F /* noop-file.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,10 +31,8 @@
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-dermavisionai/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		8642B4D298E84C59BCDA4155 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "dermavisionai/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		AA04034C117A41A6AD4B4F1F /* dermavisionai-Bridging-Header.h */ = {isa = PBXFileReference; name = "dermavisionai-Bridging-Header.h"; path = "dermavisionai/dermavisionai-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		28D893664BFE493199B0F0D7 /* MaterialIcons.ttf */ = {isa = PBXFileReference; name = "MaterialIcons.ttf"; path = "../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		9B96BE5E878B4D5AB3E0FE4D /* SpaceMono-Regular.ttf */ = {isa = PBXFileReference; name = "SpaceMono-Regular.ttf"; path = "../assets/fonts/SpaceMono-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BD3B6CF243F14226874B262F /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "dermavisionai/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		078EC44CC5CE419D988053B5 /* dermavisionai-Bridging-Header.h */ = {isa = PBXFileReference; name = "dermavisionai-Bridging-Header.h"; path = "dermavisionai/dermavisionai-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,8 +57,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				8642B4D298E84C59BCDA4155 /* noop-file.swift */,
-				AA04034C117A41A6AD4B4F1F /* dermavisionai-Bridging-Header.h */,
+				BD3B6CF243F14226874B262F /* noop-file.swift */,
+				078EC44CC5CE419D988053B5 /* dermavisionai-Bridging-Header.h */,
 			);
 			name = dermavisionai;
 			sourceTree = "<group>";
@@ -92,7 +88,6 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				D65327D7A22EEC0BE12398D9 /* Pods */,
 				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
-				9E1F34D2C1814C8DB6362621 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -140,16 +135,6 @@
 			);
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
-		};
-		9E1F34D2C1814C8DB6362621 /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				28D893664BFE493199B0F0D7 /* MaterialIcons.ttf */,
-				9B96BE5E878B4D5AB3E0FE4D /* SpaceMono-Regular.ttf */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
 		};
 /* End PBXGroup section */
 
@@ -213,9 +198,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				3F7E9061020C493A85BBB479 /* dermavisionai-Bridging-Header.h in Resources */,
-				53BD82D0BE8442D9B3FF0AA1 /* MaterialIcons.ttf in Resources */,
-				5FD0D66B9531473DA8E14AED /* SpaceMono-Regular.ttf in Resources */,
+				B536694DF8E44801A650F78C /* dermavisionai-Bridging-Header.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,7 +274,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				141E65C21045467E9D17C87D /* noop-file.swift in Sources */,
+				0155FBB3CDFA4878A8FCC62E /* noop-file.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,7 +307,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1";
 				SWIFT_OBJC_BRIDGING_HEADER = dermavisionai/dermavisionai-Bridging-Header.h;
 				CODE_SIGN_ENTITLEMENTS = dermavisionai/dermavisionai.entitlements;
 			};
@@ -350,7 +333,7 @@
 				PRODUCT_NAME = "dermavisionai";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1";
 				SWIFT_OBJC_BRIDGING_HEADER = dermavisionai/dermavisionai-Bridging-Header.h;
 				CODE_SIGN_ENTITLEMENTS = dermavisionai/dermavisionai.entitlements;
 			};
